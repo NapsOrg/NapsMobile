@@ -23,7 +23,7 @@ Want to create your own project on top of Naps? Follow these steps:
    - Don’t call your app *Naps* unless it’s official.  
    - Be creative with your own name & identity.  
 3. **Logos & Design:**  
-   - Don’t use the standard Telegram-style plane logo.  
+   - Don’t use the standard Naps-style logo.  
    - Design your own branding for clarity.  
 4. **Stay Secure:**    
    - Respect user data & privacy at all times.  
