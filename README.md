@@ -32,11 +32,49 @@ Want to create your own project on top of Naps? Follow these steps:
 
 ---
 
-## Contributing
+## 🤝 Contributing Guideline
 
-We love community!  
-- Open issues, suggest features, or submit pull requests.  
-- Share your ideas to make Naps better together.
+### Branch Naming
+
+```
+feature/short-description    # New features
+fix/short-description        # Bug fixes
+hotfix/short-description     # Critical fixes
+refactor/short-description   # Code improvements
+docs/short-description       # Documentation updates
+```
+
+### Commit Convention
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <description>
+
+feat(auth): add password reset endpoint
+fix(posts): correct sorting by creation date
+docs(readme): update installation steps
+refactor(user): optimize database queries
+perf(api): add caching layer for user profiles
+```
+
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`
+
+### Code Style
+
+- Follow **PEP 8** formatting guidelines
+- Use **type hints** for all function parameters and returns
+- Write **docstrings** for public methods
+- Keep functions **focused** and **single-purpose**
+- Place business logic in **services**, not routers
+
+### Pull Request Process
+
+1. Create a feature branch from `main`
+2. Write clear, descriptive commit messages
+3. Ensure all tests pass
+4. Update documentation if needed
+5. Request review from maintainers
 
 ---
 
