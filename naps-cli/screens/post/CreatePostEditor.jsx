@@ -21,11 +21,13 @@ import {
     Alert,
     Switch,
 } from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
 
+import CustomAlert from "../../components/alert/CustomAlert";
 import left_arrow_icon from "../../assets/icons/angle-left.png";
 import flip_icon from "../../assets/icons/repeat.png";
 import trash_icon from "../../assets/icons/trash.png";
@@ -59,28 +61,28 @@ const CreatePostEditor = () => {
     const [selectedFilter, setSelectedFilter] = useState("none");
     const [isFlipped, setIsFlipped] = useState(false);
     const [processedUri, setProcessedUri] = useState(null);
+    const [alertIsVisible, setAlertIsVisible] = useState(false);
 
     const locationService = new LocationService();
     const postService = new PostService();
 
-    const handleGoBack = () => {
+    const handleDiscard = () => {
+        setAlertVisible(false);
+        navigation.goBack();
+    };
+
+    const handleCancel = () => {
+        setAlertVisible(false);
+    };
+
+    const handleCheck = () => {
         if (caption.trim() || media) {
-            Alert.alert(
-                "Discard post?",
-                "Are you sure you want to discard this post?",
-                [
-                    { text: "Cancel", style: "cancel" },
-                    {
-                        text: "Discard",
-                        style: "destructive",
-                        onPress: () => navigation.goBack(),
-                    },
-                ]
-            );
+            setAlertVisible(true);
         } else {
             navigation.goBack();
         }
     };
+
 
     const handleChangeMedia = async () => {
         try {
@@ -201,7 +203,7 @@ const CreatePostEditor = () => {
                 <View style={styles.header}>
                     <TouchableOpacity
                         style={styles.backButton}
-                        onPress={handleGoBack}
+                        onPress={handleCheck}
                         disabled={isPosting}
                     >
                         <Image
@@ -431,6 +433,15 @@ const CreatePostEditor = () => {
                         </Text>
                     </View>
                 </ScrollView>
+                <CustomAlert
+                    visible={alertVisible}
+                    title="Discard post?"
+                    message="Are you sure you want to discard this post?"
+                    onConfirm={handleDiscard}
+                    onCancel={handleCancel}
+                    confirmText="Discard"
+                    cancelText="Cancel"
+                />
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
