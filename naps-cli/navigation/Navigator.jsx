@@ -48,6 +48,9 @@ export default function Navigator() {
     useEffect(() => {
         const checkAuth = async () => {
             const jwtService = new JwtTokenService();
+
+            await jwtService.removeToken();
+
             const isAuth = await jwtService.isAuthenticated();
             const startRoute = isAuth ? "UserHome" : "Welcome";
 
