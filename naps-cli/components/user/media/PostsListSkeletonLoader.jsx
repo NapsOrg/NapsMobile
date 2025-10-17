@@ -12,7 +12,6 @@ import {
     StyleSheet,
     Animated,
 } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
 import globalStyles from "../../../styles";
 
 const PostsListSkeleton = ({ count = 3 }) => {
@@ -37,7 +36,7 @@ const PostsListSkeleton = ({ count = 3 }) => {
 
     const shimmerOpacity = shimmerAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [0.3, 0.7],
+        outputRange: [0.3, 0.6],
     });
 
     const SkeletonBox = ({ width, height, style }) => (
@@ -52,72 +51,69 @@ const PostsListSkeleton = ({ count = 3 }) => {
 
     const renderSkeletonPost = (index) => (
         <View key={`skeleton-${index}`} style={styles.postCard}>
-            <LinearGradient
-                colors={['rgba(155, 117, 255, 0.08)', 'rgba(255, 68, 88, 0.04)', 'rgba(155, 117, 255, 0.02)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.gradientBorder}
-            >
-                <View style={styles.postContent}>
-                    {/* UserHeader */}
-                    <View style={styles.postHeader}>
-                        {/* Avatar */}
-                        <View style={styles.avatarContainer}>
-                            <LinearGradient
-                                colors={['#9B75FF', '#FF4458', '#A283FF']}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={styles.avatarGradient}
-                            >
-                                <View style={styles.avatarInner}>
-                                    <SkeletonBox width={44} height={44} style={styles.avatarSkeleton} />
-                                </View>
-                            </LinearGradient>
-                        </View>
-
-                        <View style={styles.postHeaderText}>
-                            <SkeletonBox width={120} height={16} style={{ marginBottom: 6 }} />
-                            <SkeletonBox width={60} height={12} />
-                        </View>
-
-                        <SkeletonBox width={20} height={20} style={{ borderRadius: 4 }} />
+            <View style={styles.postContent}>
+                <View style={styles.postHeader}>
+                    <View style={styles.avatarContainer}>
+                        <SkeletonBox
+                            width={40}
+                            height={40}
+                            style={styles.avatarSkeleton}
+                        />
                     </View>
 
-                    <View style={styles.captionContainer}>
-                        <SkeletonBox width="100%" height={14} style={{ marginBottom: 8 }} />
-                        <SkeletonBox width="85%" height={14} style={{ marginBottom: 8 }} />
-                        {index % 2 === 0 && (
-                            <SkeletonBox width="60%" height={14} style={{ marginBottom: 12 }} />
-                        )}
+                    <View style={styles.postHeaderText}>
+                        <SkeletonBox width={120} height={15} style={{ marginBottom: 4, borderRadius: 4 }} />
+                        <SkeletonBox width={60} height={13} style={{ borderRadius: 4 }} />
                     </View>
 
-                    {index % 3 !== 2 && (
+                    <SkeletonBox width={18} height={18} style={{ borderRadius: 9 }} />
+                </View>
+
+                <View style={styles.captionContainer}>
+                    <SkeletonBox width="100%" height={15} style={{ marginBottom: 6, borderRadius: 4 }} />
+                    <SkeletonBox width="90%" height={15} style={{ marginBottom: 6, borderRadius: 4 }} />
+                    {index % 2 === 0 && (
+                        <SkeletonBox width="70%" height={15} style={{ marginBottom: 8, borderRadius: 4 }} />
+                    )}
+                </View>
+
+                {index % 3 !== 2 && (
+                    <View style={styles.mediaWrapper}>
                         <View style={styles.mediaContainer}>
                             <SkeletonBox
                                 width="100%"
                                 height={280}
-                                style={{ borderRadius: 16 }}
+                                style={{ borderRadius: 12 }}
                             />
                         </View>
-                    )}
+                    </View>
+                )}
 
-                    <View style={styles.postFooter}>
-                        <View style={styles.statsContainer}>
-                            <View style={styles.statItem}>
-                                <SkeletonBox width={28} height={28} style={{ borderRadius: 14 }} />
-                                <SkeletonBox width={30} height={14} />
-                            </View>
+                <View style={styles.postFooter}>
+                    <View style={styles.viewsContainer}>
+                        <SkeletonBox width={16} height={16} style={{ borderRadius: 8 }} />
+                        <SkeletonBox width={40} height={13} style={{ borderRadius: 4 }} />
+                    </View>
 
-                            <View style={styles.statDivider} />
+                    <View style={styles.actionsContainer}>
+                        <View style={styles.actionButton}>
+                            <SkeletonBox width={20} height={20} style={{ borderRadius: 10 }} />
+                            <SkeletonBox width={25} height={13} style={{ borderRadius: 4 }} />
+                        </View>
 
-                            <View style={styles.statItem}>
-                                <SkeletonBox width={28} height={28} style={{ borderRadius: 14 }} />
-                                <SkeletonBox width={30} height={14} />
-                            </View>
+                        <View style={styles.actionButton}>
+                            <SkeletonBox width={19} height={19} style={{ borderRadius: 10 }} />
+                            <SkeletonBox width={25} height={13} style={{ borderRadius: 4 }} />
+                        </View>
+
+                        <View style={styles.actionButton}>
+                            <SkeletonBox width={19} height={19} style={{ borderRadius: 10 }} />
                         </View>
                     </View>
                 </View>
-            </LinearGradient>
+            </View>
+
+            <View style={styles.divider} />
         </View>
     );
 
@@ -135,82 +131,77 @@ const styles = StyleSheet.create({
     },
     postCard: {
         width: '100%',
-        marginBottom: 16,
-    },
-    gradientBorder: {
-        borderRadius: 20,
-        padding: 1.5,
+        backgroundColor: globalStyles.dark.backgroundColor,
+        marginBottom: 8,
     },
     postContent: {
-        backgroundColor: globalStyles.dark.postBackgroundColor,
-        borderRadius: 19,
-        padding: 16,
+        paddingHorizontal: 12,
+        paddingTop: 12,
+        paddingBottom: 8,
     },
+
     postHeader: {
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 12,
     },
     avatarContainer: {
-        marginRight: 12,
-    },
-    avatarGradient: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        padding: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    avatarInner: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: '#1a1a1a',
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden',
+        marginRight: 10,
     },
     avatarSkeleton: {
-        borderRadius: 22,
+        borderRadius: 20,
     },
     postHeaderText: {
         flex: 1,
     },
+
     captionContainer: {
-        marginBottom: 12,
+        marginBottom: 8,
+    },
+
+    mediaWrapper: {
+        marginVertical: 8,
     },
     mediaContainer: {
-        marginBottom: 12,
+        width: "100%",
+        borderRadius: 12,
+        overflow: "hidden",
+        backgroundColor: '#1C1C1E',
     },
+
     postFooter: {
         flexDirection: "row",
-        justifyContent: "flex-start",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginTop: 8,
+        paddingTop: 8,
+    },
+    viewsContainer: {
+        flexDirection: 'row',
         alignItems: 'center',
+        gap: 4,
     },
-    statsContainer: {
+    actionsContainer: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "rgba(255, 255, 255, 0.04)",
-        borderRadius: 24,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderWidth: 1,
-        borderColor: "rgba(255, 255, 255, 0.08)",
+        gap: 20,
     },
-    statItem: {
+    actionButton: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 8,
+        gap: 4,
+        paddingVertical: 4,
+        paddingHorizontal: 2,
     },
-    statDivider: {
-        width: 1,
-        height: 20,
-        backgroundColor: "rgba(255, 255, 255, 0.1)",
-        marginHorizontal: 12,
+
+    divider: {
+        height: 0.5,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        marginLeft: 62,
     },
+
     skeletonBox: {
-        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
         borderRadius: 8,
     },
 });

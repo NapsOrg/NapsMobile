@@ -223,7 +223,7 @@ const FeedScreen = () => {
                 </Text>
                 <TouchableOpacity
                     style={styles.exploreButton}
-                    onPress={() => navigation.navigate("Search")}
+                    onPress={() => navigation.navigate("UserSearch")}
                     activeOpacity={0.8}
                 >
                     <LinearGradient

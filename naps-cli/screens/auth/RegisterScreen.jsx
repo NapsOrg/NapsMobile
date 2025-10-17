@@ -34,6 +34,7 @@ import AuthButton from "../../components/buttons/AuthButton";
 import Footer from "../../components/footer/Footer";
 import PolicyDisclaymer from "../../components/policy/PolicyDisclaymer";
 
+import UserMetadataService from "../../services/UserMetadataService";
 import AuthContext from "../../auth/AuthContext";
 import { useHaptic } from "../../hooks/useHaptic";
 import globalStyles from "../../styles";
@@ -129,8 +130,15 @@ const RegisterScreen = ({ route }) => {
         setServerMessage("");
 
         try {
+            console.log("Fetching location data...");
             const locationService = new LocationService();
-            const { latitude, longitude, city } = await locationService.getUserLocationData();
+            const locationData = await locationService.getUserLocationDataWithRetry();
+            const { latitude, longitude, city, country, timezone } = locationData;
+
+            console.log("Fetching user metadata...");
+            const metadataService = new UserMetadataService();
+            const metadata = await metadataService.getUserMetadataWithRetry();
+            const { os, device, app_version, ip_address } = metadata;
 
             const verified_id = route.params.uuid;
 
@@ -139,27 +147,46 @@ const RegisterScreen = ({ route }) => {
                 username,
                 full_name: fullName,
                 password,
-                latitude,
-                longitude,
-                city,
+                latitude: latitude || null,
+                longitude: longitude || null,
+                city: city || null,
+                country: country || null,
+                timezone: timezone || null,
+                os: os || null,
+                device: device || null,
+                app_version: app_version || null,
+                ip_address: ip_address || null,
             };
+
+            console.log("Registration payload:", payload);
 
             const res = await onCompleteRegistration(verified_id, payload);
             console.log("Registration success:", res);
 
+            // Update UI states
             setServerMessage("Account created successfully!");
             setIsUsernameCorrect(true);
             setIsFullNameCorrect(true);
             setIsPasswordCorrect(true);
 
-            navigation.navigate("UserHome", {userId: null});
+            haptics.success && haptics.success();
+            navigation.navigate("UserHome", { userId: null });
         } catch (error) {
-            console.error("Registration failed:", error.response?.data || error.message);
-            const message = error.response?.data?.detail || "Registration failed.";
+            console.error(
+                "Registration failed:",
+                error.response?.data || error.message
+            );
+
+            const message =
+                error.response?.data?.detail ||
+                error.response?.data?.message ||
+                "Registration failed. Please try again.";
+
             setServerMessage(message);
             setIsUsernameWrong(true);
             setIsFullNameWrong(true);
             setIsPasswordWrong(true);
+
             shakeInput();
             haptics.error && haptics.error();
         } finally {
