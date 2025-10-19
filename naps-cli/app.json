@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/logo/naps-logo-bordered.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0f1421"
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -97,7 +97,8 @@
         {
           "contactsPermission": "Naps needs access to your contacts to help you find and connect with friends."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "jsEngine": "hermes",
     "runtimeVersion": {
@@ -108,6 +109,6 @@
         "projectId": "ed15fa85-88aa-4103-9f55-65453095f406"
       }
     },
-    "owner": "NapsSolutions"
+    "owner": "gnatykdm"
   }
 }

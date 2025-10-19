@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     buttonOk: {
         flex: 1,
         height: 44,
-        backgroundColor: globalStyles.main.green,
+        backgroundColor: globalStyles.main.accent,
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',

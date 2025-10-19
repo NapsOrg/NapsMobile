@@ -67,17 +67,17 @@ const CreatePostEditor = () => {
     const postService = new PostService();
 
     const handleDiscard = () => {
-        setAlertVisible(false);
+        setAlertIsVisible(false);
         navigation.goBack();
     };
 
     const handleCancel = () => {
-        setAlertVisible(false);
+        setAlertIsVisible(false);
     };
 
     const handleCheck = () => {
         if (caption.trim() || media) {
-            setAlertVisible(true);
+            setAlertIsVisible(true);
         } else {
             navigation.goBack();
         }
@@ -434,9 +434,9 @@ const CreatePostEditor = () => {
                     </View>
                 </ScrollView>
                 <CustomAlert
-                    visible={alertVisible}
                     title="Discard post?"
                     message="Are you sure you want to discard this post?"
+                    visible={alertIsVisible}
                     onConfirm={handleDiscard}
                     onCancel={handleCancel}
                     confirmText="Discard"

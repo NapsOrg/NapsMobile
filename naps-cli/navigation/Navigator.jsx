@@ -14,8 +14,10 @@ import {
     DarkTheme,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
 import Navbar from "../components/navbar/Navbar";
+import CustomDrawerContent from "./CustomDrawerNavigator";
 
 import WelcomeScreen from "../screens/auth/WelcomeScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
@@ -37,7 +39,40 @@ import globalStyles from "../styles";
 import JwtTokenService from "../services/JwtTokenService";
 
 const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
+
 const authScreens = ["Welcome", "Login", "Register", "VerifyEmail"];
+
+function FeedDrawer({ isDarkMode, setIsDarkMode }) {
+    return (
+        <Drawer.Navigator
+            screenOptions={{
+                headerShown: false,
+                drawerStyle: {
+                    width: 280,
+                },
+            }}
+            drawerContent={(props) => (
+                <CustomDrawerContent
+                    {...props}
+                    isDarkMode={isDarkMode}
+                    setIsDarkMode={setIsDarkMode}
+                />
+            )}
+        >
+            <Drawer.Screen
+                name="FeedMain"
+                component={FeedScreen}
+                options={{ headerShown: false }}
+            />
+            <Drawer.Screen
+                name="SettingsDrawer"
+                component={SettingsScreen}
+                options={{ headerShown: false }}
+            />
+        </Drawer.Navigator>
+    );
+}
 
 export default function Navigator() {
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -110,33 +145,31 @@ export default function Navigator() {
                 initialRouteName={initialRoute}
                 screenOptions={defaultScreenOptions}
             >
-                {/* Auth */}
                 <Stack.Screen name="Welcome" component={WelcomeScreen} />
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Register" component={RegisterScreen} />
                 <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
-
-                {/* User */}
                 <Stack.Screen name="UserHome" component={UserHomeScreen} />
                 <Stack.Screen name="UserSearch" component={UserSearchScreen} />
                 <Stack.Screen name="Followers" component={FollowersScreen} />
                 <Stack.Screen name="UpdateUser" component={UpdateUserScreen} />
 
-                {/* Feed / Map */}
-                <Stack.Screen name="Feed" component={FeedScreen} />
-                <Stack.Screen name="Map" component={MapScreen} />
+                {/* Feed with Drawer */}
+                <Stack.Screen
+                    name="Feed"
+                    options={{ headerShown: false }}
+                >
+                    {() => <FeedDrawer isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}
+                </Stack.Screen>
 
-                {/* Posts */}
+                <Stack.Screen name="Map" component={MapScreen} />
                 <Stack.Screen name="CreatePost" component={CreatePostScreen} />
                 <Stack.Screen name="CreatePostEditor" component={CreatePostEditor} />
                 <Stack.Screen name="CreatePostText" component={CreatePostText} />
                 <Stack.Screen name="PostDetail" component={PostDetailScreen} />
-
-                {/* Settings */}
                 <Stack.Screen name="Settings" component={SettingsScreen} />
             </Stack.Navigator>
 
-            {/* Navbar */}
             {!authScreens.includes(currentRoute) &&
                 !["CreatePost", "CreatePostEditor", "CreatePostText"].includes(
                     currentRoute

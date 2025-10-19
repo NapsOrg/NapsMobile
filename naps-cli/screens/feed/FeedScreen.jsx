@@ -271,7 +271,9 @@ const FeedScreen = () => {
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
-            <FeedHeader onLogoPress={handleLogoPress} />
+            <FeedHeader
+                onProfilePress={() => navigation.openDrawer()}
+                onLogoPress={handleLogoPress} />
 
             <KeyboardAvoidingView
                 style={styles.keyboardAvoidingContainer}

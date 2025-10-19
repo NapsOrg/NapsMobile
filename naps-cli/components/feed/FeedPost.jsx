@@ -30,16 +30,16 @@ const AdaptivePostMedia = memo(({ mediaUrl, containerWidth }) => {
                 mediaUrl,
                 (width, height) => {
                     const aspectRatio = height / width;
-                    let calculatedHeight = (containerWidth - 32) * aspectRatio;
+                    let calculatedHeight = (containerWidth - 80) * aspectRatio;
 
-                    calculatedHeight = Math.max(200, Math.min(500, calculatedHeight));
+                    calculatedHeight = Math.max(150, Math.min(400, calculatedHeight));
 
                     setImageHeight(calculatedHeight);
                     setLoading(false);
                 },
                 (error) => {
                     console.log('Failed to get image size:', error);
-                    setImageHeight(300);
+                    setImageHeight(250);
                     setLoading(false);
                 }
             );
@@ -105,196 +105,201 @@ const FeedPost = ({ post, onPress, onLikePress, onCommentPress }) => {
     };
 
     return (
-        <TouchableOpacity
-            activeOpacity={0.95}
-            onPress={() => onPress && onPress(post.postId)}
-            style={styles.postCard}
-        >
-            <View style={styles.postContent}>
-                <View style={styles.postHeader}>
-                    <View style={styles.avatarContainer}>
-                        {post.creatorAvatarUrl ? (
-                            <Image
-                                source={{ uri: post.creatorAvatarUrl }}
-                                style={styles.avatarImage}
-                                resizeMode="cover"
-                            />
-                        ) : (
-                            <View style={styles.avatarPlaceholder}>
-                                <Text style={styles.avatarText}>
-                                    {post.creatorUsername.charAt(0).toUpperCase()}
-                                </Text>
-                            </View>
-                        )}
-                    </View>
-
-                    <View style={styles.postHeaderText}>
-                        <Text style={styles.username}>{post.creatorUsername}</Text>
-                        <Text style={styles.timestamp}>{formatDate(post.createdAt)}</Text>
-                    </View>
-
-                    {post.isMy && (
-                        <View style={styles.myBadge}>
-                            <Ionicons name="checkmark-circle" size={18} color="#8774E1" />
+        <View style={styles.container}>
+            <View style={styles.messageGroup}>
+                <View style={styles.avatarContainer}>
+                    {post.creatorAvatarUrl ? (
+                        <Image
+                            source={{ uri: post.creatorAvatarUrl }}
+                            style={styles.avatarImage}
+                            resizeMode="cover"
+                        />
+                    ) : (
+                        <View style={styles.avatarPlaceholder}>
+                            <Text style={styles.avatarText}>
+                                {post.creatorUsername.charAt(0).toUpperCase()}
+                            </Text>
                         </View>
                     )}
                 </View>
 
-                {post.content && post.content.trim() !== '' && (
-                    <Text style={styles.caption}>
-                        {post.content}
-                    </Text>
-                )}
+                <View style={styles.messageContent}>
+                    <View style={styles.messageHeader}>
+                        <Text style={styles.username}>{post.creatorUsername}</Text>
+                        {post.isMy && (
+                            <Ionicons name="checkmark-circle" size={14} color="#8774E1" style={styles.badgeIcon} />
+                        )}
+                        <Text style={styles.timestamp}>{formatDate(post.createdAt)}</Text>
+                    </View>
 
-                {hasMedia && (
-                    <View style={styles.mediaWrapper}>
-                        <AdaptivePostMedia
-                            mediaUrl={post.media[0].mediaUrl}
-                            containerWidth={screenWidth}
-                        />
-                        {post.media.length > 1 && (
-                            <View style={styles.mediaCountBadge}>
-                                <Ionicons name="images" size={12} color="#fff" />
-                                <Text style={styles.mediaCountText}>{post.media.length}</Text>
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => onPress && onPress(post.postId)}
+                        style={styles.messageBubble}
+                    >
+                        {post.content && post.content.trim() !== '' && (
+                            <Text style={styles.messageText}>
+                                {post.content}
+                            </Text>
+                        )}
+
+                        {hasMedia && (
+                            <View style={styles.mediaWrapper}>
+                                <AdaptivePostMedia
+                                    mediaUrl={post.media[0].mediaUrl}
+                                    containerWidth={screenWidth}
+                                />
+                                {post.media.length > 1 && (
+                                    <View style={styles.mediaCountBadge}>
+                                        <Ionicons name="images" size={12} color="#fff" />
+                                        <Text style={styles.mediaCountText}>+{post.media.length - 1}</Text>
+                                    </View>
+                                )}
                             </View>
                         )}
-                    </View>
-                )}
+                    </TouchableOpacity>
 
-                <View style={styles.postFooter}>
-                    <View style={styles.viewsContainer}>
-                        <Ionicons name="eye-outline" size={16} color="#8E8E93" />
-                        <Text style={styles.viewsText}>
-                            {post.viewsCount || Math.floor(Math.random() * 1000)}
-                        </Text>
-                    </View>
+                    <View style={styles.messageFooter}>
+                        <View style={styles.viewsContainer}>
+                            <Ionicons name="eye-outline" size={14} color="#8E8E93" />
+                            <Text style={styles.viewsText}>
+                                {post.viewsCount || Math.floor(Math.random() * 1000)}
+                            </Text>
+                        </View>
 
-                    <View style={styles.actionsContainer}>
-                        <TouchableOpacity
-                            style={styles.actionButton}
-                            onPress={handleLike}
-                            activeOpacity={0.6}
-                        >
-                            <Ionicons
-                                name={post.isLiked ? "heart" : "heart-outline"}
-                                size={20}
-                                color="#FF3B30"
-                            />
-                            {post.likesCount > 0 && (
-                                <Text style={[
-                                    styles.actionText,
-                                    post.isLiked && styles.actionTextActive
-                                ]}>
-                                    {post.likesCount}
-                                </Text>
-                            )}
-                        </TouchableOpacity>
+                        <View style={styles.actionsContainer}>
+                            <TouchableOpacity
+                                style={styles.actionButton}
+                                onPress={handleLike}
+                                activeOpacity={0.6}
+                            >
+                                <Ionicons
+                                    name={post.isLiked ? "heart" : "heart-outline"}
+                                    size={16}
+                                    color={post.isLiked ? "#FF3B30" : "#8E8E93"}
+                                />
+                                {post.likesCount > 0 && (
+                                    <Text style={[
+                                        styles.actionText,
+                                        post.isLiked && styles.actionTextActive
+                                    ]}>
+                                        {post.likesCount}
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.actionButton}
-                            onPress={handleComment}
-                            activeOpacity={0.6}
-                        >
-                            <Ionicons
-                                name="chatbubble-outline"
-                                size={19}
-                                color="#9561FB"
-                            />
-                            {post.commentsCount > 0 && (
-                                <Text style={styles.actionText}>
-                                    {post.commentsCount}
-                                </Text>
-                            )}
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.actionButton}
+                                onPress={handleComment}
+                                activeOpacity={0.6}
+                            >
+                                <Ionicons
+                                    name="chatbubble-outline"
+                                    size={16}
+                                    color="#9561FB"
+                                />
+                                {post.commentsCount > 0 && (
+                                    <Text style={styles.actionText}>
+                                        {post.commentsCount}
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.actionButton}
-                            activeOpacity={0.6}
-                        >
-                            <Ionicons
-                                name="arrow-redo-outline"
-                                size={19}
-                                color="#8E8E93"
-                            />
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.actionButton}
+                                activeOpacity={0.6}
+                            >
+                                <Ionicons
+                                    name="arrow-redo-outline"
+                                    size={16}
+                                    color="#8E8E93"
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </View>
-
-            <View style={styles.divider} />
-        </TouchableOpacity>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    postCard: {
+    container: {
         width: '100%',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
         backgroundColor: globalStyles.dark.backgroundColor,
     },
-    postContent: {
-        paddingHorizontal: 12,
-        paddingTop: 12,
-        paddingBottom: 8,
-    },
-
-    postHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 12,
+    messageGroup: {
+        flexDirection: 'row',
+        gap: 8,
     },
     avatarContainer: {
-        marginRight: 10,
+        marginTop: 4,
     },
     avatarImage: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
     },
     avatarPlaceholder: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
         backgroundColor: '#8774E1',
         justifyContent: 'center',
         alignItems: 'center',
     },
     avatarText: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '600',
     },
-    postHeaderText: {
+
+    messageContent: {
         flex: 1,
+        gap: 4,
+    },
+    messageHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginBottom: 2,
     },
     username: {
         color: "#fff",
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: "600",
-        marginBottom: 2,
+    },
+    badgeIcon: {
+        marginHorizontal: 2,
     },
     timestamp: {
         color: "#8E8E93",
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: "400",
     },
-    myBadge: {
-        marginLeft: 8,
-    },
 
-    caption: {
+    messageBubble: {
+        backgroundColor: '#2C2C2E',
+        borderRadius: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        gap: 8,
+    },
+    messageText: {
         color: "#fff",
         fontSize: 15,
         lineHeight: 20,
-        marginBottom: 8,
     },
 
     mediaWrapper: {
-        marginVertical: 8,
+        marginVertical: 4,
         position: 'relative',
     },
     mediaContainer: {
         width: "100%",
-        borderRadius: 12,
+        borderRadius: 8,
         overflow: "hidden",
         backgroundColor: '#1C1C1E',
     },
@@ -315,65 +320,56 @@ const styles = StyleSheet.create({
     },
     mediaCountBadge: {
         position: "absolute",
-        top: 8,
-        right: 8,
-        backgroundColor: "rgba(0, 0, 0, 0.6)",
-        borderRadius: 12,
+        top: 6,
+        right: 6,
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        borderRadius: 10,
         paddingHorizontal: 8,
         paddingVertical: 4,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 4,
+        gap: 3,
     },
     mediaCountText: {
         color: '#fff',
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: '600',
     },
 
-    // Footer
-    postFooter: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginTop: 8,
-        paddingTop: 8,
+    messageFooter: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingLeft: 4,
     },
     viewsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 4,
+        gap: 3,
     },
     viewsText: {
         color: '#8E8E93',
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: '400',
     },
     actionsContainer: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 20,
+        gap: 16,
     },
     actionButton: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 4,
-        paddingVertical: 4,
-        paddingHorizontal: 2,
+        gap: 3,
+        padding: 4,
     },
     actionText: {
         color: "#8E8E93",
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: "500",
     },
     actionTextActive: {
         color: "#FF3B30",
-    },
-
-    divider: {
-        height: 0.5,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        marginLeft: 62,
     },
 });
 
