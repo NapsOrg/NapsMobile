@@ -23,6 +23,7 @@ import Navbar from "../../components/navbar/Navbar";
 import UserDataView from "../../components/user/data/UserDataView";
 import UserMediaView from "../../components/user/media/UserMediaView";
 
+import StorageService from "../../services/StorageService";
 import FollowService from "../../services/FollowService";
 import UserService from "../../services/UserService.js";
 import globalStyles from "../../styles";
@@ -42,6 +43,23 @@ const UserHomeScreen = ({ route }) => {
     const userService = new UserService();
     const navigation = useNavigation();
 
+    const syncUserToStorage = useCallback(async (userData) => {
+        try {
+            if (!userData) return;
+
+            await StorageService.saveUserData({
+                userName: userData.username,
+                fullName: userData.full_name,
+                avatar: userData.avatar_url,
+                userId: userData.user_id,
+            });
+
+            await StorageService.saveUserProfile(userData);
+        } catch (error) {
+            console.error("Error syncing user to storage:", error);
+        }
+    }, []);
+
     const fetchMe = async (isRefresh = false) => {
         try {
             if (!isRefresh) setIsLoading(true);
@@ -52,18 +70,20 @@ const UserHomeScreen = ({ route }) => {
             if (response.status === 200 && response.data) {
                 setUser(response.data);
                 setIsFollowing(false);
+
+                await syncUserToStorage(response.data);
             } else {
                 setUserFetchingProblems(true);
-                setUserFetchingProblemsMessage('Invalid response from server');
+                setUserFetchingProblemsMessage("Invalid response from server");
             }
         } catch (error) {
             setUserFetchingProblems(true);
             setUserFetchingProblemsMessage(
                 error?.response?.data?.detail ||
                 error?.message ||
-                'Failed to fetch user data'
+                "Failed to fetch user data"
             );
-            console.error('Error fetching user data:', error);
+            console.error("Error fetching user data:", error);
         } finally {
             if (!isRefresh) setIsLoading(false);
         }
@@ -146,6 +166,15 @@ const UserHomeScreen = ({ route }) => {
                     followers: prev.followers + 1
                 }));
             }
+
+            setUser(prevUser => {
+                const updated = {
+                    ...prevUser,
+                    is_following: !isFollowing,
+                };
+                StorageService.updateUserProfile(updated);
+                return updated;
+            });
         } catch (error) {
             console.error('Error toggling follow:', error);
         } finally {
@@ -209,12 +238,24 @@ const UserHomeScreen = ({ route }) => {
         );
     }
 
-    const handleAvatarUpdate = (newAvatarUrl) => {
+    const handleAvatarUpdate = async (newAvatarUrl) => {
         console.log('Avatar updated:', newAvatarUrl);
-        setUser(prev => ({
-            ...prev,
-            avatar_url: newAvatarUrl
-        }));
+        const updatedUser = {
+            ...user,
+            avatar_url: newAvatarUrl,
+        };
+        setUser(updatedUser);
+
+        await StorageService.updateUserProfile({
+            avatar_url: newAvatarUrl,
+        });
+
+        await StorageService.saveUserData({
+            userName: user.username,
+            fullName: user.full_name,
+            avatar: newAvatarUrl,
+            userId: user.user_id,
+        });
     };
 
     return (
