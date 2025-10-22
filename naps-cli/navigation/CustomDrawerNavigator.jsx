@@ -79,7 +79,7 @@ const CustomDrawerContent = ({ navigation, isDarkMode, setIsDarkMode }) => {
         }
     };
 
-    const bgColor = isDarkMode ? '#1c1c1d' : '#ffffff';
+    const bgColor = isDarkMode ? '#000' : '#ffffff';
     const textColor = isDarkMode ? '#ffffff' : '#000000';
     const secondaryText = isDarkMode ? '#8e8e93' : '#8e8e93';
     const iconColor = isDarkMode ? '#ffffff' : '#000000';
@@ -96,7 +96,7 @@ const CustomDrawerContent = ({ navigation, isDarkMode, setIsDarkMode }) => {
             flex: 1,
         },
         header: {
-            backgroundColor: isDarkMode ? '#1c1c1d' : '#ffffff',
+            backgroundColor: isDarkMode ? '#000' : '#ffffff',
             paddingTop: 60,
             paddingBottom: 20,
             paddingHorizontal: 20,
@@ -524,7 +524,10 @@ const CustomDrawerContent = ({ navigation, isDarkMode, setIsDarkMode }) => {
 
                     <TouchableOpacity
                         style={styles.menuItem}
-                        onPress={() => navigation.closeDrawer()}
+                        onPress={() => {
+                            navigation.navigate("Chats");
+                            navigation.closeDrawer();
+                        }}
                         activeOpacity={0.6}
                     >
                         <View style={styles.menuIcon}>

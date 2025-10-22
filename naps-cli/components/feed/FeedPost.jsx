@@ -18,8 +18,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import globalStyles from "../../styles";
-
 const AdaptivePostMedia = memo(({ mediaUrl, containerWidth }) => {
     const [imageHeight, setImageHeight] = useState(300);
     const [loading, setLoading] = useState(true);
@@ -67,42 +65,53 @@ AdaptivePostMedia.displayName = 'AdaptivePostMedia';
 const FeedPost = ({ post, onPress, onLikePress, onCommentPress }) => {
     const { width: screenWidth } = useWindowDimensions();
 
+    // Safety checks
+    if (!post) return null;
+
     const hasMedia = post.media && post.media.length > 0;
 
     const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
+        if (!dateString) return "recently";
+        
+        try {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 1) return "just now";
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        if (diffDays === 1) return "yesterday";
-        if (diffDays < 7) return `${diffDays}d ago`;
+            if (diffMins < 1) return "just now";
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays === 1) return "yesterday";
+            if (diffDays < 7) return `${diffDays}d ago`;
 
-        const options = { month: 'short', day: 'numeric' };
-        if (date.getFullYear() !== now.getFullYear()) {
-            options.year = 'numeric';
+            const options = { month: 'short', day: 'numeric' };
+            if (date.getFullYear() !== now.getFullYear()) {
+                options.year = 'numeric';
+            }
+            return date.toLocaleDateString("en-US", options);
+        } catch (error) {
+            console.log('Error formatting date:', error);
+            return "recently";
         }
-        return date.toLocaleDateString("en-US", options);
     };
 
-    const handleLike = (e) => {
-        e.stopPropagation();
+    const handleLike = () => {
         if (onLikePress) {
             onLikePress(post.postId);
         }
     };
 
-    const handleComment = (e) => {
-        e.stopPropagation();
+    const handleComment = () => {
         if (onCommentPress) {
             onCommentPress(post.postId);
         }
     };
+
+    const username = post.creatorUsername || "Anonymous";
+    const avatarLetter = username.charAt(0).toUpperCase();
 
     return (
         <View style={styles.container}>
@@ -117,7 +126,7 @@ const FeedPost = ({ post, onPress, onLikePress, onCommentPress }) => {
                     ) : (
                         <View style={styles.avatarPlaceholder}>
                             <Text style={styles.avatarText}>
-                                {post.creatorUsername.charAt(0).toUpperCase()}
+                                {avatarLetter}
                             </Text>
                         </View>
                     )}
@@ -125,7 +134,7 @@ const FeedPost = ({ post, onPress, onLikePress, onCommentPress }) => {
 
                 <View style={styles.messageContent}>
                     <View style={styles.messageHeader}>
-                        <Text style={styles.username}>{post.creatorUsername}</Text>
+                        <Text style={styles.username}>{username}</Text>
                         {post.isMy && (
                             <Ionicons name="checkmark-circle" size={14} color="#8774E1" style={styles.badgeIcon} />
                         )}
@@ -163,7 +172,7 @@ const FeedPost = ({ post, onPress, onLikePress, onCommentPress }) => {
                         <View style={styles.viewsContainer}>
                             <Ionicons name="eye-outline" size={14} color="#8E8E93" />
                             <Text style={styles.viewsText}>
-                                {post.viewsCount || Math.floor(Math.random() * 1000)}
+                                {post.viewsCount || 0}
                             </Text>
                         </View>
 
@@ -228,7 +237,7 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingHorizontal: 12,
         paddingVertical: 8,
-        backgroundColor: globalStyles.dark.backgroundColor,
+        backgroundColor: '#000000',
     },
     messageGroup: {
         flexDirection: 'row',

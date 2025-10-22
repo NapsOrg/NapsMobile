@@ -20,14 +20,13 @@ import {
     ScrollView,
     Image,
     Alert,
+    Linking,
+    KeyboardAvoidingView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { Video } from 'expo-av';
-import globalStyles from "../../styles";
 
-const NAVBAR_HEIGHT = 15;
 const MEDIA_PREVIEW_HEIGHT = 100;
 
 const SmartInput = ({
@@ -38,53 +37,45 @@ const SmartInput = ({
                         placeholder = "Write a comment...",
                         maxLength = 500,
                         visible = false,
+                        isNavbarVisible = true
                     }) => {
     const [isFocused, setIsFocused] = useState(false);
-    const [keyboardHeight, setKeyboardHeight] = useState(0);
-    const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState([]);
+    const [keyboardHeight, setKeyboardHeight] = useState(0);
     const inputRef = useRef(null);
-    const insets = useSafeAreaInsets();
     const mediaHeightAnim = useRef(new Animated.Value(0)).current;
-    const containerBottomAnim = useRef(new Animated.Value(NAVBAR_HEIGHT)).current;
+    const keyboardOffsetAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        const keyboardWillShow = Keyboard.addListener(
+        const keyboardWillShowListener = Keyboard.addListener(
             Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
             (e) => {
-                const height = e.endCoordinates.height;
-                setKeyboardHeight(height);
-                setIsKeyboardVisible(true);
-
-                Animated.spring(containerBottomAnim, {
-                    toValue: height - (Platform.OS === 'ios' ? insets.bottom : 0),
+                setKeyboardHeight(e.endCoordinates.height);
+                Animated.timing(keyboardOffsetAnim, {
+                    toValue: e.endCoordinates.height,
+                    duration: Platform.OS === 'ios' ? e.duration : 250,
                     useNativeDriver: false,
-                    damping: 20,
-                    stiffness: 300,
                 }).start();
             }
         );
 
-        const keyboardWillHide = Keyboard.addListener(
+        const keyboardWillHideListener = Keyboard.addListener(
             Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-            () => {
+            (e) => {
                 setKeyboardHeight(0);
-                setIsKeyboardVisible(false);
-
-                Animated.spring(containerBottomAnim, {
-                    toValue: NAVBAR_HEIGHT,
+                Animated.timing(keyboardOffsetAnim, {
+                    toValue: 0,
+                    duration: Platform.OS === 'ios' ? e.duration : 250,
                     useNativeDriver: false,
-                    damping: 20,
-                    stiffness: 300,
                 }).start();
             }
         );
 
         return () => {
-            keyboardWillShow.remove();
-            keyboardWillHide.remove();
+            keyboardWillShowListener.remove();
+            keyboardWillHideListener.remove();
         };
-    }, [insets.bottom]);
+    }, []);
 
     useEffect(() => {
         Animated.spring(mediaHeightAnim, {
@@ -185,15 +176,15 @@ const SmartInput = ({
     });
 
     return (
-        <Animated.View
+        <Animated.View 
             style={[
                 styles.wrapper,
                 {
-                    bottom: containerBottomAnim,
+                    bottom: keyboardOffsetAnim,
                 }
             ]}
         >
-            <View style={[styles.container, { marginBottom: (isFocused && isKeyboardVisible) ? 0 : 55 }]}>
+            <View style={styles.container}>
                 <Animated.View
                     style={[
                         styles.mediaPreviewContainer,
@@ -254,7 +245,7 @@ const SmartInput = ({
                         onPress={pickMedia}
                         activeOpacity={0.6}
                     >
-                        <Ionicons name="attach" size={24} color="#8E8E93" />
+                        <Ionicons name="attach" size={24} color="#9561FB" />
                         {selectedMedia.length > 0 && (
                             <View style={styles.mediaBadge}>
                                 <Text style={styles.mediaBadgeText}>{selectedMedia.length}</Text>
@@ -267,7 +258,7 @@ const SmartInput = ({
                             ref={inputRef}
                             style={styles.input}
                             placeholder={selectedMedia.length > 0 ? "Add a caption..." : placeholder}
-                            placeholderTextColor="#8E8E93"
+                            placeholderTextColor="#666"
                             value={value}
                             onChangeText={onChangeText}
                             onFocus={handleFocus}
@@ -306,7 +297,7 @@ const SmartInput = ({
                             <Ionicons
                                 name="send"
                                 size={20}
-                                color="#fff"
+                                color={canSend ? "#fff" : "#666"}
                             />
                         )}
                     </TouchableOpacity>
@@ -321,15 +312,15 @@ const styles = StyleSheet.create({
         position: 'absolute',
         left: 0,
         right: 0,
-        zIndex: 1000,
+        bottom: 0,
+        backgroundColor: '#1A1A1A',
+        borderTopWidth: 0.5,
+        borderTopColor: 'rgba(255, 255, 255, 0.1)',
     },
     container: {
-        paddingHorizontal: 8,
+        paddingHorizontal: 12,
         paddingTop: 8,
         paddingBottom: 8,
-        backgroundColor: globalStyles.dark.backgroundColor ,
-        borderTopWidth: 0.5,
-        borderTopColor: 'rgba(0, 0, 0, 0.1)',
     },
     mediaPreviewContainer: {
         overflow: 'hidden',
@@ -348,7 +339,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 8,
-        backgroundColor: globalStyles.dark.backgroundColor,
+        backgroundColor: '#2C2C2E',
     },
     videoPreview: {
         position: 'relative',
@@ -405,9 +396,9 @@ const styles = StyleSheet.create({
     },
     mediaBadge: {
         position: 'absolute',
-        top: 0,
-        right: 0,
-        backgroundColor: globalStyles.main.accent,
+        top: -2,
+        right: -2,
+        backgroundColor: '#9561FB',
         minWidth: 16,
         height: 16,
         borderRadius: 8,
@@ -416,48 +407,52 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4,
     },
     mediaBadgeText: {
-        color: globalStyles.main.accent,
+        color: '#fff',
         fontSize: 10,
-        fontWeight: '600',
+        fontWeight: '700',
     },
     inputWrapper: {
         flex: 1,
-        backgroundColor: globalStyles.main.inputBackgroundColor,
-        borderRadius: 18,
-        minHeight: 36,
+        backgroundColor: '#2C2C2E',
+        borderRadius: 20,
+        minHeight: 40,
         maxHeight: 120,
         justifyContent: 'center',
         paddingRight: 8,
+        borderWidth: 1,
+        borderColor: 'rgba(149, 97, 251, 0.2)',
     },
     input: {
-        paddingHorizontal: 12,
-        paddingTop: 8,
-        paddingBottom: 8,
-        fontSize: 16,
+        paddingHorizontal: 16,
+        paddingTop: 10,
+        paddingBottom: 10,
+        fontSize: 15,
         color: '#fff',
+        lineHeight: 20,
     },
     counterContainer: {
         position: 'absolute',
-        right: 8,
-        bottom: 6,
+        right: 12,
+        bottom: 8,
     },
     charCounter: {
         fontSize: 11,
-        color: '#8E8E93',
+        color: '#666',
         fontWeight: '500',
     },
     charCounterLimit: {
         color: '#FF3B30',
     },
     sendButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#2C2C2E',
     },
     sendButtonActive: {
-        backgroundColor: globalStyles.main.accent,
+        backgroundColor: '#9561FB',
     },
 });
 
