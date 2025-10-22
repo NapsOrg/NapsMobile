@@ -15,7 +15,7 @@ import React from "react";
 const ChatHeader = ({ title  }) => {
     const navigation = useNavigation();
     const handleCreateChat = () => {
-        navigation.navigate('CreateChat');
+        navigation.navigate('UserSearch');
     };
 
     return (
