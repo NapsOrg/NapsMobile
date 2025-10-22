@@ -210,10 +210,6 @@ const FeedScreen = () => {
 
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
-            <LinearGradient
-                colors={['rgba(155, 117, 255, 0.08)', 'rgba(255, 68, 88, 0.04)']}
-                style={styles.emptyGradient}
-            >
                 <View style={styles.emptyIconContainer}>
                     <Ionicons name="images-outline" size={80} color="#9B75FF" />
                 </View>
@@ -221,22 +217,6 @@ const FeedScreen = () => {
                 <Text style={styles.emptyText}>
                     Follow some users to see their posts in your feed!
                 </Text>
-                <TouchableOpacity
-                    style={styles.exploreButton}
-                    onPress={() => navigation.navigate("UserSearch")}
-                    activeOpacity={0.8}
-                >
-                    <LinearGradient
-                        colors={['#9B75FF', '#FF4458']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={styles.exploreButtonGradient}
-                    >
-                        <Ionicons name="search" size={20} color="#fff" />
-                        <Text style={styles.exploreButtonText}>Explore Users</Text>
-                    </LinearGradient>
-                </TouchableOpacity>
-            </LinearGradient>
         </View>
     );
 
@@ -336,7 +316,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: globalStyles.dark.backgroundColor,
-        height: "110%",
+        height: "120%",
     },
     keyboardAvoidingContainer: {
         flex: 1,

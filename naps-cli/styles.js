@@ -6,7 +6,7 @@ const globalStyles = {
     },
 
     dark: {
-        backgroundColor: '#1c1c1d',
+        backgroundColor: '#000',
         textPrimary: "#fff",
         textSecondary: "#888",
         postBackgroundColor: "rgba(20, 20, 20, 0.95)",

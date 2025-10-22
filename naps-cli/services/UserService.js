@@ -70,6 +70,15 @@ class UserService {
             throw error;
         }
     }
+    
+    async getMeBasic() {
+        const response = await this.request('get', '/me_basic');
+        console.log(`fetching me_basic: ${response.data}`)
+        return {
+            status: response.status,
+            data: response.data
+        }
+    }
 
     async getMyProfile() {
         const response = await this.request('get', '/me');

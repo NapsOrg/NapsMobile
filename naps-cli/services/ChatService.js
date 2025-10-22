@@ -33,7 +33,15 @@ class ChatService {
                 { headers }
             );
 
-            return response.data.map(chat => ChatSchema.fromApi(chat));
+            if (!Array.isArray(response.data)) {
+                console.error("Expected array of chats, got:", response.data);
+                return [];
+            }
+
+            return response.data.map(chat => {
+                const chatSchema = ChatSchema.fromApi(chat);
+                return chatSchema.toJSON();
+            });
         } catch (error) {
             console.error("Error fetching chats:", error);
             throw error;
@@ -49,7 +57,8 @@ class ChatService {
                 { headers }
             );
 
-            return ChatSchema.fromApi(response.data);
+            const chatSchema = ChatSchema.fromApi(response.data);
+            return chatSchema.toJSON();
         } catch (error) {
             if (error.response?.status === 404) {
                 throw new Error("User not found");

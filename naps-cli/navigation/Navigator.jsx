@@ -33,6 +33,8 @@ import FeedScreen from "../screens/feed/FeedScreen";
 import MapScreen from "../screens/map/MapsScreen";
 import FollowersScreen from "../screens/followers/FollowersScreen";
 import SettingsScreen from "../screens/settings/SettingsScreen";
+import ChatScreen from "../screens/chat/ChatScreen";
+import MessageScreen from "../screens/message/MessageScreen";
 import UpdateUserScreen from "../screens/user/UpdateUserScreen";
 
 import globalStyles from "../styles";
@@ -168,10 +170,12 @@ export default function Navigator() {
                 <Stack.Screen name="CreatePostText" component={CreatePostText} />
                 <Stack.Screen name="PostDetail" component={PostDetailScreen} />
                 <Stack.Screen name="Settings" component={SettingsScreen} />
+                <Stack.Screen name="Chats" component={ChatScreen} />
+                <Stack.Screen name="Message" component={MessageScreen} />
             </Stack.Navigator>
 
             {!authScreens.includes(currentRoute) &&
-                !["CreatePost", "CreatePostEditor", "CreatePostText"].includes(
+                !["CreatePost", "CreatePostEditor", "CreatePostText", "Message"].includes(
                     currentRoute
                 ) && (
                     <View style={StyleSheet.absoluteFill}>
